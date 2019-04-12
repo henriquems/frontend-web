@@ -15,7 +15,7 @@ export default class Box extends Component {
 
   async componentDidMount(){
     this.subscribeToNewFiles();
-
+    
     const box = this.props.match.params.id;
     const response = await api.get(`boxes/${box}`);
 
@@ -25,8 +25,14 @@ export default class Box extends Component {
   subscribeToNewFiles = () => {
     const box = this.props.match.params.id;
     const io = socket('https://curso-javascript.herokuapp.com');
+    
+    io.emit('connectRoom', box);
 
-    console.log(io);
+    io.on('file', data => {
+      this.setState({ 
+        box: { ...this.state.box, files: [data, ...this.state.box.files] } 
+      });
+    });
   }
 
   handleUpload = (files) => {
